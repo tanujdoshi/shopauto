@@ -7,6 +7,7 @@ package shopauto;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -58,10 +59,6 @@ public class Login extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Email");
-
-        jTextField1.setText("jTextField1");
-
-        jPasswordField1.setText("jPasswordField1");
 
         jButton1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jButton1.setText("Login");
@@ -155,49 +152,60 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-         String userText;
-            String pwdText;
-            String emtext;
-           // userText = userTextField.getText();
-            pwdText = jPasswordField1.getText();
-            emtext=jTextField1.getText();
-           // System.out.println("op"+userText.isEmpty()+"pw"+pwdText);
-            if (pwdText.isEmpty()!=true && emtext.isEmpty()!=true) {
-                
-                try {
-                    Class.forName("com.mysql.jdbc.Driver");
-                    Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/shopauto","root","");
-                    String sql="select uname,email,password from user where email='"+emtext+"'&& password='"+pwdText+"'";
-                    Statement stmt = con.createStatement();
-                    ResultSet rs= stmt.executeQuery(sql);
-                    
-                    if(rs.next())
-                    {
-                           String s=rs.getString("uname");
-                           JOptionPane.showMessageDialog(this, "Login Successful");                           
-                           this.dispose();
-                            Home h =new Home();//s);
-                            h.setVisible(true);
-                    }
-                    else
-                    {
-                           JOptionPane.showMessageDialog(this, "Login Failed NO Such User Exist");
-                    }
-           
-       } catch (Exception ex) {
-                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-                         
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         jTextField1.setText(null);
         jPasswordField1.setText(null);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String userText;
+        String pwdText;
+        String emtext;
+        // userText = userTextField.getText();
+        pwdText = jPasswordField1.getText();
+        emtext=jTextField1.getText();
+        // System.out.println("op"+userText.isEmpty()+"pw"+pwdText);
+        if (pwdText.isEmpty()!=true && emtext.isEmpty()!=true) {
+
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/shopauto","root","");
+                String sql="select * from user where email='"+emtext+"'&& password='"+pwdText+"'";
+                Statement stmt = con.createStatement();
+                ResultSet rs= stmt.executeQuery(sql);
+
+                if(rs.next())
+                {
+                    String s=rs.getString("uname");
+                    String t=rs.getString("type");
+
+                    if(rs.getString("type").equals("owner"))
+                    {
+                        JOptionPane.showMessageDialog(this, "Login Successful");
+                        this.dispose();
+                        new Home(s,t).setVisible(true);//s);setVisible(true);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(this, "Login Successful as Cashier");
+                    this.dispose();
+                    new Home(s,t).setVisible(true);//s);
+
+            }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Login Failed NO Such User Exist");
+        }
+
+        } catch (Exception ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
